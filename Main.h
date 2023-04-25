@@ -5,6 +5,16 @@
 
 using namespace std;
 
+enum BlockType {
+  I_BLOCK,
+  J_BLOCK,
+  L_BLOCK,
+  O_BLOCK,
+  S_BLOCK,
+  T_BLOCK,
+  Z_BLOCK
+};
+
 class Block {
     private:
     int x;
@@ -22,34 +32,59 @@ class Block {
     void setY(int b);
 
     // Methods
-    void move(int first, int second);
-    void rotate();
+    void move(int x, int y);
+    void rotateClockwise();
+    void rotateCounterClockwise();
 
   
 };
 
 class GameBoard {
 
-  private:
-    int width;
-    int height;
-    int* blocks;
-    int score;
+  
+    
   public:
+    // Constants
+    static const int WIDTH = 10;
+    static const int HEIGHT = 20;
+
+    // Constructor
+    GameBoard();
+
+     public:
+    // Constants
+    static const int WIDTH = 10;
+    static const int HEIGHT = 20;
+
     // Constructor
     GameBoard();
 
     // Getters and setters
-    int getWidth();
-    int getHeight();
-    int getBlock(int x, int y);
-    int getScore();
-    void setBlock(int x, int y, int type);
+    int getWidth() const;
+    int getHeight() const;
+    BlockType getBlock(int x, int y) const;
+    int getScore() const;
+    int getLevel() const;
+    int getNumRowsCleared() const;
+    void setBlock(int x, int y, BlockType type);
     void setScore(int score);
+    void setLevel(int level);
+    void setNumRowsCleared(int numRowsCleared);
 
     // Methods
-    bool isGameOver();
+    bool isGameOver() const;
+    bool isBlockEmpty(int x, int y) const;
+    bool isRowComplete(int y) const;
+    void clearRow(int y);
     void clearRows();
+    void placeBlock(const Block& block);
+    private:
+    BlockType blocks_[WIDTH][HEIGHT];
+    int score;
+    int level;
+    int numRowsCleared;
+
+  
 
 };
 
@@ -57,27 +92,37 @@ class Player {
   private:
     int score;
     int level;
+    int numRowsCleared;
     Block currentBlock;
     Block nextBlock;
+    int timeToMove;
   public:
     // Constructor
     Player();
 
-    // Getters and setters
-    int getScore();
-    int getLevel();
-    Block getCurrentBlock();
-    Block getNextBlock();
+  // Getters and setters
+    int getScore() const;
+    int getLevel() const;
+    int getNumRowsCleared() const;
+    Block getCurrentBlock() const;
+    Block getNextBlock() const;
+    int getTimeToMove() const;
     void setScore(int score);
     void setLevel(int level);
-    void setCurrentBlock(Block block);
-    void setNextBlock(Block block);
+    void setNumRowsCleared(int numRowsCleared);
+    void setCurrentBlock(const Block& block);
+    void setNextBlock(const Block& block);
+    void setTimeToMove(int timeToMove);
 
-    // Methods
+   // Methods
+    bool canMoveCurrentBlock(int dx, int dy) const;
+    bool canRotateCurrentBlockClockwise() const;
+    bool canRotateCurrentBlockCounterClockwise() const;
     void moveCurrentBlock(int dx, int dy);
-    void rotateCurrentBlock();
+    void rotateCurrentBlockClockwise();
+    void rotateCurrentBlockCounterClockwise();
     void dropCurrentBlock();
-    void updateScore(int rowsCleared);
+    void updateScore(int numRowsCleared);
 
 
 };
