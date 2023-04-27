@@ -111,6 +111,33 @@ void display() {
 
 //---------------------------------------------------------------
 
+void User_Input(int key){
+   switch (key){
+   case GLUT_KEY_UP:
+      /* code */
+      glutPostRedisplay(); //Updates the displaying image when an action has occurred.
+      break;
+   
+   case GLUT_KEY_RIGHT:
+      /* code */
+      glutPostRedisplay();
+      break;
+
+   case GLUT_KEY_LEFT:
+      /* code */
+      glutPostRedisplay();
+      break;
+
+   case GLUT_KEY_DOWN:
+      /* code */ 
+      glutPostRedisplay();
+      break;  
+   }
+}
+
+//---------------------------------------------------------------
+
+
 int main(int argc, char** argv) {
 
 glutInit(&argc, argv);
@@ -120,6 +147,7 @@ glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 glutCreateWindow("TETRIS");
 init();
 glutDisplayFunc(display);
+glutSpecialFunc(User_Input);
 
 glutMainLoop();
 return 0;
