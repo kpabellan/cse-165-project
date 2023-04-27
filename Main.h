@@ -3,7 +3,9 @@
 
 #include <iostream>
 
+
 using namespace std;
+const int gridSize = 10;
 
 enum BlockType {
     I_BLOCK,
@@ -47,10 +49,10 @@ class GameBoard {
         // Initialize all blocks to NULL
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                blocks[x][y] ==  NULL;
+                blocks[x][y] == NULL;
             }
         }
-    }
+    }  
     // Getters and setters
     int getWidth() {
         return width;
@@ -116,21 +118,21 @@ class GameBoard {
         return true; // Row is complete
     }
 
-    void clearRow(int y) {
-        // Clear all cells in the row
-        for (int x = 0; x < width; ++x) {
-            blocks[x][y] == NULL;
-        }
+ void clearRow(int y) {
+    // Clear all cells in the row
+    for (int x = 0; x < width; ++x) {
+        blocks[x][y] == NULL;
     }
+}
 
-    void clearRows() {
-        // Check each row for completion and clear completed rows
-        for (int y = 0; y < height; ++y) {
-            if (isRowComplete(y)) {
-                clearRow(y);
-            }
+void clearRows() {
+    // Check each row for completion and clear completed rows
+    for (int y = 0; y < height; ++y) {
+        if (isRowComplete(y)) {
+            clearRow(y);
         }
     }
+}
 
     void placeBlock( Block& block) {
         // Check if block can be placed at current position
@@ -159,9 +161,7 @@ class GameBoard {
             }
         }
 
-        // Clear completed rows and update score, etc.
-        clearRows();
-        // ...
+        
     }
 };
 
@@ -250,10 +250,36 @@ class Block:GameBoard {
     return (getBlock(a, b)!= NULL);
 }
 
+ bool checkCollision(GameBoard& gameBoard, int x, int y)  {
+    // Check if block is out of bounds
+    if (x < 0 || x >= gameBoard.getWidth() || y < 0 || y >= gameBoard.getHeight()) {
+        return true;
+    }
+
+    // Check if block overlaps with other blocks on the game board
+    for (int i = 0; i < getBlockSize(type); ++i) {
+        for (int j = 0; j < getBlockSize(type); ++j) {
+            if (isCellOccupied(i, j)) {
+                int boardX = x + i;
+                int boardY = y + j;
+                if (boardX < 0 || boardX >= gameBoard.getWidth() || boardY < 0 || boardY >= gameBoard.getHeight()) {
+                    // Block is out of bounds
+                    return true;
+                }
+                if (gameBoard.isCellOccupied(boardX, boardY)) {
+                    // Block overlaps with another block on the game board
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
   
 };
 
-class Player {
+class Player  {
   private:
     int score;
     int level;
@@ -299,10 +325,10 @@ class Player {
     void setNumRowsCleared(int nrc){
         numRowsCleared = nrc;
     }
-    void setCurrentBlock(const Block& block){
+    void setCurrentBlock( Block& block){
         currentBlock = block;
     }
-    void setNextBlock(const Block& block){
+    void setNextBlock( Block& block){
         nextBlock = block;
     }
 
@@ -311,19 +337,77 @@ class Player {
     }
 
    // Methods
-    bool canMoveCurrentBlock(int dx, int dy) const{
-        
+    bool canMoveCurrentBlock(int dx, int dy)  {
+    // Check if the current block is within the boundaries of the grid
+    if (currentBlock.getX() + dx < 0 || currentBlock.getX() + dx >= gridSize ||
+        currentBlock.getY() + dy < 0 || currentBlock.getY() + dy >= gridSize) {
+        return false;
     }
+    
+    // Check if the destination cell is empty
+      return (currentBlock.isCellOccupied(dx,dy));
 
-    bool canRotateCurrentBlockClockwise() const;
-    bool canRotateCurrentBlockCounterClockwise() const;
-    void moveCurrentBlock(int dx, int dy);
-    void rotateCurrentBlockClockwise();
-    void rotateCurrentBlockCounterClockwise();
-    void dropCurrentBlock();
-    void updateScore(int numRowsCleared);
+
+
+}   
+bool canRotateCurrentBlockClockwise()  {
+    // Check if the current block can be rotated clockwise without colliding with anything
+    Block rotated = currentBlock;
+    rotated.rotateClockwise();
+    return !checkCollision(rotated);
+}
+
+bool canRotateCurrentBlockCounterClockwise()  {
+    // Check if the current block can be rotated counterclockwise without colliding with anything
+    Block rotated = currentBlock;
+    rotated.rotateCounterClockwise();
+    return !checkCollision(rotated);
+}
+
+void moveCurrentBlock(int dx, int dy) {
+    // Move the current block by the given displacement (dx, dy) if possible
+        currentX = currentBlock.getX();
+        currentY = currentBlock.getY();
+    if (!checkCollision(currentBlock, currentX + dx, currentY + dy)) {
+        currentX += dx;
+        currentY += dy;
+    }
+}
+
+void rotateCurrentBlockClockwise() {
+    // Rotate the current block clockwise if possible
+    
+    if (canRotateCurrentBlockClockwise()) {
+        currentBlock.rotateClockwise();
+    }
+}
+
+void rotateCurrentBlockCounterClockwise() {
+    // Rotate the current block counterclockwise if possible
+    if (canRotateCurrentBlockCounterClockwise()) {
+        currentBlock.rotateCounterClockwise();
+    }
+}
+
+void dropCurrentBlock() {
+    // Drop the current block as far as possible
+         currentX = currentBlock.getX();
+        currentY = currentBlock.getY();
+    while (!checkCollision(currentBlock, currentX,currentY + 1)) {
+        currentY++;
+    }
+}
+
+void updateScore(int numRowsCleared) {
+    // Update the score based on the number of rows cleared
+    if (numRowsCleared > 0) {
+        score += pow(2, numRowsCleared) * 100;
+    }
+}
 
 
 };
 
 #endif
+
+
