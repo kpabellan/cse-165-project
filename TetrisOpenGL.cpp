@@ -70,12 +70,12 @@ void J_shape(float x, float y, float size) {
 
 
 void init() {
-   glClearColor(0.0, 0.0, 0.0, 0.0); //Black Background for the square of the Tetris Game
+   glClearColor(0.0, 0.0, 0.0, 0.0); //This clears all filters/colors and sets the background to black
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
    glOrtho(0, 10, 0, 20, -1, 1); //Specifies the size of the projection on the computer screen. 
    glMatrixMode(GL_MODELVIEW);
-}
+} //We project a black background for the base of the tetris game.
 
 //----------------------------------------------------------
 
@@ -111,7 +111,7 @@ void display() {
 
 //---------------------------------------------------------------
 
-void User_Input(int key){
+void User_Input(int key, int x, int y){
    switch (key){
    case GLUT_KEY_UP:
       /* code */
