@@ -8,6 +8,7 @@
 float piece_x = 1.0f;
 float piece_y = 1.0f;
 int blockType = 0;
+Tetris::Shape shape = Tetris::Shape::I;
 int pieceOrientation = 0; // 0 = original orientation, 1 = 90 degree rotation, 2 = 180 degree rotation, 3 = 270 degree rotation
 
 using namespace std::this_thread; // Sleep_for, sleep_until
@@ -49,18 +50,58 @@ void init() {
   glMatrixMode(GL_MODELVIEW);
 }
 
-void dropBlock() {
+void spawnBlock() {
   srand(time(0));
   blockType = rand() % 7 + 1;
+  if (blockType == 0) {
+    shape = Tetris::Shape::I;
+  } else if (blockType == 1) {
+    shape = Tetris::Shape::J;
+  } else if (blockType == 2) {
+    shape = Tetris::Shape::L;
+  } else if (blockType == 3) {
+    shape = Tetris::Shape::O;
+  } else if (blockType == 4) {
+    shape = Tetris::Shape::S;
+  } else if (blockType == 5) {
+    shape = Tetris::Shape::T;
+  } else if (blockType == 6) {
+    shape = Tetris::Shape::Z;
+  }
   piece_x = 3.0f;
   piece_y = 17.0f;
 }
 
-void timer(int value) {
-  piece_y -= 1.0f;
-  if (piece_y <= 0.0f) {
-    dropBlock();
+bool validMove(float x, float y, int pieceOrientation, int dx, int dy, Tetris::Shape shape) {
+  Tetris tetris(shape);
+  const auto & tetromino = tetris.tetrominoes[pieceOrientation];
+
+  for (int row = 0; row < tetromino.size(); ++row) {
+    for (int col = 0; col < tetromino[row].size(); ++col) {
+      if (tetromino[row][col]) {
+        float newX = x + col + dx;
+        float newY = y + row + dy;
+
+        if (newX < 0 || newX > 9 || newY < 0 || newY > 19) {
+          return false; // Out of bounds
+        }
+        // Check for collision code here
+      }
+    }
   }
+
+  return true;
+}
+
+void timer(int value) {
+  if (validMove(piece_x, piece_y, pieceOrientation, 0, -1, shape)) {
+    piece_y -= 1.0f;
+  }
+
+   if (piece_y <= 0.0f) {
+    spawnBlock();
+  }
+
   glutPostRedisplay();
   glutTimerFunc(SPAWN_INTERVAL_MS, timer, 0);
 }
@@ -86,29 +127,7 @@ void display() {
   }
   glEnd();
 
-  switch (blockType) {
-  case 1:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::I, pieceOrientation);
-    break;
-  case 2:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::J, pieceOrientation);
-    break;
-  case 3:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::L, pieceOrientation);
-    break;
-  case 4:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::O, pieceOrientation);
-    break;
-  case 5:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::S, pieceOrientation);
-    break;
-  case 6:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::T, pieceOrientation);
-    break;
-  case 7:
-    drawTetromino(piece_x, piece_y, 1.0f, Tetris::Shape::Z, pieceOrientation);
-    break;
-  }
+  drawTetromino(piece_x, piece_y, 1.0f, shape, pieceOrientation);
 
   glutSwapBuffers();
 }
@@ -116,24 +135,28 @@ void display() {
 void handleInput(int key, int x, int y) {
   switch (key) {
   case GLUT_KEY_UP:
-    if (blockType != 4) {
-      pieceOrientation = (pieceOrientation + 1) % 4;
-    }
+    pieceOrientation = (pieceOrientation + 1) % 4;
     glutPostRedisplay(); // Updates the displaying image when an action has occurred
     break;
 
   case GLUT_KEY_RIGHT:
-    piece_x += 1.0f;
+    if (validMove(piece_x, piece_y, pieceOrientation, 1, 0, shape)) {
+      piece_x += 1.0f;
+    }
     glutPostRedisplay();
     break;
 
   case GLUT_KEY_LEFT:
-    piece_x -= 1.0f;
+    if (validMove(piece_x, piece_y, pieceOrientation, -1, 0, shape)) {
+      piece_x -= 1.0f;
+    }
     glutPostRedisplay();
     break;
 
   case GLUT_KEY_DOWN:
-    piece_y -= 1.0f;
+    if (validMove(piece_x, piece_y, pieceOrientation, 0, -1, shape)) {
+      piece_y -= 1.0f;
+    }
     glutPostRedisplay();
     break;
   }
@@ -146,7 +169,7 @@ int main(int argc, char ** argv) {
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
   glutCreateWindow("TETRIS");
   init();
-  dropBlock();
+  spawnBlock();
   glutDisplayFunc(display);
   glutSpecialFunc(handleInput);
   glutTimerFunc(1000, timer, 0);
