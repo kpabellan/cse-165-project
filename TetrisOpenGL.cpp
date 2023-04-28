@@ -1,8 +1,20 @@
 #include <GL/freeglut.h>
+#include <chrono>
+#include <thread>
+#include <cstdlib>
+#include <ctime>
+
+float piece_x = 5.0f;
+float piece_y = 15.0f;
+int piece_type = 1;
+int blockType = 0;
+
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
 
 // Define window dimensions
-const int WINDOW_WIDTH = 300;
-const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 600;
+const int WINDOW_HEIGHT = 1200;
 
 void drawSquare(float x, float y, float size) {
    glBegin(GL_QUADS); //This creates quadrilaterals -- We will be using this to create the shapes of the tetris figures.
@@ -79,7 +91,17 @@ void init() {
 
 //----------------------------------------------------------
 
+void dropBlock() {
+   srand(time(0));
+   blockType = rand() % 7 + 1;
+   piece_x = 5.0f;
+   piece_y = 15.0f;
+}
+
+//----------------------------------------------------------
+
 void display() {
+   dropBlock();
    glColor3f(1.0, 1.0, 1.0); // white color for the grid lines
    
    // draw grid lines
@@ -97,15 +119,17 @@ void display() {
       glVertex2f(10, i);
    }
    glEnd();
-/*
-   L_shape(2.0, 2.0, 1.0);
-   I_shape(5.0,5.0, 1.0);
-   O_shape(0.0, 0.0, 1.0);
-   T_shape(7.0, 0.0, 1.0);
-   S_shape(2.0, 5.0, 1.0);
-   Z_shape(2.0, 10.0, 1.0);
-   J_shape(6.0, 11.0, 1.0);
-*/
+
+   switch (blockType) {
+      case 1: I_shape(piece_x, piece_y, 1.0f);
+      case 2: J_shape(piece_x, piece_y, 1.0f);
+      case 3: L_shape(piece_x, piece_y, 1.0f);
+      case 4: O_shape(piece_x, piece_y, 1.0f);
+      case 5: S_shape(piece_x, piece_y, 1.0f);
+      case 6: T_shape(piece_x, piece_y, 1.0f);
+      case 7: Z_shape(piece_x, piece_y, 1.0f);
+   }
+
    glutSwapBuffers(); //There's 2 buffers, and we are always switching them to make it work faster.
 }
 
@@ -120,18 +144,21 @@ void User_Input(int key, int x, int y){
    
    case GLUT_KEY_RIGHT:
       /* code */
+      piece_x += 1.0f;
       glutPostRedisplay();
       break;
 
    case GLUT_KEY_LEFT:
       /* code */
+      piece_x -= 1.0f;
       glutPostRedisplay();
       break;
 
    case GLUT_KEY_DOWN:
       /* code */ 
+      piece_y -= 1.0f;
       glutPostRedisplay();
-      break;  
+      break;
    }
 }
 
