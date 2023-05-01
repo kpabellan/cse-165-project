@@ -1,25 +1,37 @@
 #ifndef MAIN_H
-#define MAIN_H 
+#define MAIN_H
 
 #include <vector>
 
-class Tetris {
+enum Shape {
+    I,
+    J,
+    L,
+    O,
+    S,
+    T,
+    Z
+};
+
+class ShapeC{
+   
+    Shape shp;
+    public:
+    Shape gettingShape(Shape xxx){
+        return xxx;
+    }
+    void setShape(Shape xxx){
+                shp = xxx;
+    }
+};
+
+class Tetris : ShapeC{
     public:
         std::vector<std::vector<std::vector<int>>> tetrominoes;
         float color[3];
 
-        enum class Shape {
-            I,
-            J,
-            L,
-            O,
-            S,
-            T,
-            Z
-        };
-
         Tetris(Shape shape) {
-            switch (shape) {
+            switch (gettingShape(shape)) {
                 case Shape::I:
                     color[0] = 0.678f;
                     color[1] = 0.847f;
@@ -100,5 +112,7 @@ class Tetris {
             }
         }
 };
+
+
 
 #endif
