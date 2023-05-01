@@ -13,17 +13,19 @@ enum Shape {
     Z
 };
 
-class getShape{
+class ShapeC{
    
     Shape shp;
     public:
     Shape gettingShape(Shape xxx){
-        shp = xxx;
-        return shp;
+        return xxx;
+    }
+    void setShape(Shape xxx){
+                shp = xxx;
     }
 };
 
-class Tetris : getShape{
+class Tetris : ShapeC{
     public:
         std::vector<std::vector<std::vector<int>>> tetrominoes;
         float color[3];
@@ -114,5 +116,3 @@ class Tetris : getShape{
 
 
 #endif
-
-
