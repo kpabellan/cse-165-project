@@ -11,7 +11,7 @@ float piece_y = 1.0f;
 int blockType = 1; // 1 = I, 2 = J, 3 = L, 4 = O, 5 = S, 6 = T, 7 = Z
 int pieceOrientation = 0; // 0 = original orientation, 1 = 90 degree rotation, 2 = 180 degree rotation, 3 = 270 degree rotation
 int gameBoard[20][10]; // [row][column]
-Tetris::Shape shape = Tetris::Shape::I;
+Shape shape = Shape::I;
 
 using namespace std::this_thread; // Sleep_for, sleep_until
 using namespace std::chrono; // Nanoseconds, system_clock, seconds
@@ -50,7 +50,7 @@ void drawBlock(float x, float y, float size) {
 }
 
 // Draws a tetromino at the specified location with the specified size
-void drawTetromino(float x, float y, float size, Tetris::Shape shape, int orientation) {
+void drawTetromino(float x, float y, float size, Shape shape, int orientation) {
   Tetris tetris(shape);
   const auto & tetromino = tetris.tetrominoes[orientation];
 
@@ -69,26 +69,26 @@ void spawnTetromino() {
   srand(time(0));
   blockType = rand() % 7 + 1;
   if (blockType == 1) {
-    shape = Tetris::Shape::I;
+    shape = Shape::I;
   } else if (blockType == 2) {
-    shape = Tetris::Shape::J;
+    shape = Shape::J;
   } else if (blockType == 3) {
-    shape = Tetris::Shape::L;
+    shape = Shape::L;
   } else if (blockType == 4) {
-    shape = Tetris::Shape::O;
+    shape = Shape::O;
   } else if (blockType == 5) {
-    shape = Tetris::Shape::S;
+    shape = Shape::S;
   } else if (blockType == 6) {
-    shape = Tetris::Shape::T;
+    shape = Shape::T;
   } else if (blockType == 7) {
-    shape = Tetris::Shape::Z;
+    shape = Shape::Z;
   }
   piece_x = 3.0f;
   piece_y = 17.0f;
 }
 
 // Checks if the block can move to the specified location
-bool validMove(float x, float y, int pieceOrientation, int newOrientation, int dx, int dy, Tetris::Shape shape) {
+bool validMove(float x, float y, int pieceOrientation, int newOrientation, int dx, int dy, Shape shape) {
   Tetris tetris(shape);
   const auto & tetromino = tetris.tetrominoes[newOrientation];
 
@@ -178,22 +178,22 @@ void timer(int value) {
 void drawBoard(float size) {
   for (int row = 0; row < 20; row++) {
     for (int col = 0; col < 10; col++) {
-      Tetris tetris(Tetris::Shape::I); // Initialize the Tetris object with a default shape
+      Tetris tetris(Shape::I); // Initialize the Tetris object with a default shape
       if (gameBoard[row][col]) {
         if (gameBoard[row][col] == 1) {
-          tetris = Tetris(Tetris::Shape::I);
+          tetris = Tetris(Shape::I);
         } else if (gameBoard[row][col] == 2) {
-          tetris = Tetris(Tetris::Shape::J);
+          tetris = Tetris(Shape::J);
         } else if (gameBoard[row][col] == 3) {
-          tetris = Tetris(Tetris::Shape::L);
+          tetris = Tetris(Shape::L);
         } else if (gameBoard[row][col] == 4) {
-          tetris = Tetris(Tetris::Shape::O);
+          tetris = Tetris(Shape::O);
         } else if (gameBoard[row][col] == 5) {
-          tetris = Tetris(Tetris::Shape::S);
+          tetris = Tetris(Shape::S);
         } else if (gameBoard[row][col] == 6) {
-          tetris = Tetris(Tetris::Shape::T);
+          tetris = Tetris(Shape::T);
         } else if (gameBoard[row][col] == 7) {
-          tetris = Tetris(Tetris::Shape::Z);
+          tetris = Tetris(Shape::Z);
         } else {
           // No block in this cell, draw nothing
           continue;
